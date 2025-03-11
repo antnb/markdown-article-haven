@@ -1,7 +1,5 @@
 
 import matter from 'gray-matter';
-import fs from 'fs';
-import path from 'path';
 
 export interface ArticleMetadata {
   slug: string;
@@ -17,39 +15,32 @@ export interface Article extends ArticleMetadata {
   content: string;
 }
 
-// Read all markdown files from the data directory
+// Simulated list of articles
+const articleFiles = [
+  'getting-started-with-markdown.md',
+  'advanced-markdown-techniques.md',
+  'markdown-for-developers.md'
+];
+
+// Get articles metadata
 export const getArticles = async (): Promise<ArticleMetadata[]> => {
   try {
-    const articlesDirectory = path.join(process.cwd(), 'data');
-    const fileNames = fs.readdirSync(articlesDirectory);
-    
-    const articles = fileNames
-      .filter(fileName => fileName.endsWith('.md'))
-      .map(fileName => {
-        // Remove .md extension to get slug
+    const articles = await Promise.all(
+      articleFiles.map(async (fileName) => {
         const slug = fileName.replace(/\.md$/, '');
+        const article = await getArticleBySlug(slug);
+        if (!article) return null;
         
-        // Read file content
-        const fullPath = path.join(articlesDirectory, fileName);
-        const fileContents = fs.readFileSync(fullPath, 'utf8');
-        
-        // Parse frontmatter
-        const { data } = matter(fileContents);
-        
-        // Return article metadata
-        return {
-          slug,
-          title: data.title || 'Untitled',
-          description: data.description || '',
-          date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
-          author: data.author,
-          readingTime: data.readingTime || calculateReadingTime(fileContents),
-          tags: data.tags || [],
-        };
-      });
+        // Return metadata only (without content)
+        const { content, ...metadata } = article;
+        return metadata;
+      })
+    );
     
-    // Sort articles by date (newest first)
-    return articles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    // Filter out null values and sort by date
+    return articles
+      .filter((article): article is ArticleMetadata => article !== null)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   } catch (error) {
     console.error('Error getting articles:', error);
     return [];
@@ -59,10 +50,14 @@ export const getArticles = async (): Promise<ArticleMetadata[]> => {
 // Get a specific article by slug
 export const getArticleBySlug = async (slug: string): Promise<Article | null> => {
   try {
-    const fullPath = path.join(process.cwd(), 'data', `${slug}.md`);
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    // Fetch the markdown file
+    const response = await fetch(`/data/${slug}.md`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch article: ${response.statusText}`);
+    }
     
-    return parseMarkdown(fileContents, slug);
+    const fileContent = await response.text();
+    return parseMarkdown(fileContent, slug);
   } catch (error) {
     console.error(`Error getting article with slug ${slug}:`, error);
     return null;
