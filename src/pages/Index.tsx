@@ -1,31 +1,32 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ArticleCard from '@/components/ArticleCard';
-
-const exampleArticles = [
-  {
-    slug: 'getting-started-with-markdown',
-    title: 'Getting Started with Markdown',
-    description: 'Learn the basics of Markdown syntax and how to write beautiful documents.',
-    date: '2023-06-15',
-    readingTime: '4 min read',
-    author: 'Markdown Master'
-  },
-  {
-    slug: 'advanced-markdown-techniques',
-    title: 'Advanced Markdown Techniques',
-    description: 'Take your Markdown skills to the next level with these advanced tips and tricks.',
-    date: '2023-07-22',
-    readingTime: '7 min read',
-    author: 'Syntax Pro'
-  }
-];
+import { getArticles, ArticleMetadata } from '@/lib/article-utils';
 
 const Index = () => {
+  const [featuredArticles, setFeaturedArticles] = useState<ArticleMetadata[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const articles = await getArticles();
+        // Get the two most recent articles
+        setFeaturedArticles(articles.slice(0, 2));
+      } catch (error) {
+        console.error('Failed to fetch featured articles:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArticles();
+  }, []);
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -78,20 +79,30 @@ const Index = () => {
               </Button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-up" style={{ '--index': 3 } as React.CSSProperties}>
-              {exampleArticles.map((article, i) => (
-                <ArticleCard 
-                  key={article.slug}
-                  slug={article.slug}
-                  title={article.title}
-                  description={article.description}
-                  date={article.date}
-                  readingTime={article.readingTime}
-                  author={article.author}
-                  index={i}
-                />
-              ))}
-            </div>
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <p className="text-muted-foreground">Loading articles...</p>
+              </div>
+            ) : featuredArticles.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No featured articles available.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-up" style={{ '--index': 3 } as React.CSSProperties}>
+                {featuredArticles.map((article, i) => (
+                  <ArticleCard 
+                    key={article.slug}
+                    slug={article.slug}
+                    title={article.title}
+                    description={article.description}
+                    date={article.date}
+                    readingTime={article.readingTime}
+                    author={article.author}
+                    index={i}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
