@@ -15,35 +15,101 @@ export interface Article extends ArticleMetadata {
   content: string;
 }
 
-// Simulated list of articles
-const articleFiles = [
-  'getting-started-with-markdown.md',
-  'advanced-markdown-techniques.md',
-  'markdown-for-developers.md'
-];
+// Configuration for pagination
+const ARTICLES_PER_PAGE = 10;
 
-// Get articles metadata
-export const getArticles = async (): Promise<ArticleMetadata[]> => {
+// Get articles metadata with pagination
+export const getArticles = async (page = 1): Promise<{
+  articles: ArticleMetadata[];
+  totalPages: number;
+  currentPage: number;
+}> => {
   try {
+    // Fetch the article list from a directory index endpoint
+    const response = await fetch('/data/index.json');
+    
+    if (!response.ok) {
+      // If the index doesn't exist, try to scan the directory
+      return await scanArticlesDirectory(page);
+    }
+    
+    const allArticles = await response.json();
+    
+    // Sort articles by date (newest first)
+    const sortedArticles = allArticles.sort(
+      (a: ArticleMetadata, b: ArticleMetadata) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    
+    // Calculate pagination
+    const totalPages = Math.ceil(sortedArticles.length / ARTICLES_PER_PAGE);
+    const startIndex = (page - 1) * ARTICLES_PER_PAGE;
+    const paginatedArticles = sortedArticles.slice(startIndex, startIndex + ARTICLES_PER_PAGE);
+    
+    return {
+      articles: paginatedArticles,
+      totalPages,
+      currentPage: page
+    };
+  } catch (error) {
+    console.error('Error getting articles:', error);
+    // Fallback to directory scanning if the index fails
+    return await scanArticlesDirectory(page);
+  }
+};
+
+// Scan for articles by checking common files
+const scanArticlesDirectory = async (page = 1): Promise<{
+  articles: ArticleMetadata[];
+  totalPages: number;
+  currentPage: number;
+}> => {
+  try {
+    // Try to fetch a list of sample articles to check first
+    const sampleFiles = [
+      'getting-started-with-markdown.md',
+      'advanced-markdown-techniques.md',
+      'markdown-for-developers.md'
+    ];
+    
     const articles = await Promise.all(
-      articleFiles.map(async (fileName) => {
+      sampleFiles.map(async (fileName) => {
         const slug = fileName.replace(/\.md$/, '');
-        const article = await getArticleBySlug(slug);
-        if (!article) return null;
-        
-        // Return metadata only (without content)
-        const { content, ...metadata } = article;
-        return metadata;
+        try {
+          const article = await getArticleBySlug(slug);
+          if (!article) return null;
+          
+          // Return metadata only (without content)
+          const { content, ...metadata } = article;
+          return metadata;
+        } catch (error) {
+          return null;
+        }
       })
     );
     
     // Filter out null values and sort by date
-    return articles
+    const validArticles = articles
       .filter((article): article is ArticleMetadata => article !== null)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    // Calculate pagination
+    const totalPages = Math.ceil(validArticles.length / ARTICLES_PER_PAGE);
+    const startIndex = (page - 1) * ARTICLES_PER_PAGE;
+    const paginatedArticles = validArticles.slice(startIndex, startIndex + ARTICLES_PER_PAGE);
+    
+    return {
+      articles: paginatedArticles,
+      totalPages: Math.max(1, totalPages),
+      currentPage: page
+    };
   } catch (error) {
-    console.error('Error getting articles:', error);
-    return [];
+    console.error('Error scanning articles directory:', error);
+    return {
+      articles: [],
+      totalPages: 1,
+      currentPage: page
+    };
   }
 };
 

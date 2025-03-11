@@ -14,9 +14,9 @@ const Index = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const articles = await getArticles();
+        const result = await getArticles(1);
         // Get the two most recent articles
-        setFeaturedArticles(articles.slice(0, 2));
+        setFeaturedArticles(result.articles.slice(0, 2));
       } catch (error) {
         console.error('Failed to fetch featured articles:', error);
       } finally {
