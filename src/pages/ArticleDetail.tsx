@@ -7,7 +7,13 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
 // This would be replaced with actual data in a Next.js implementation
-const exampleArticles = {
+const exampleArticles: Record<string, {
+  title: string;
+  date: string;
+  author: string;
+  readingTime: string;
+  content: string;
+}> = {
   'getting-started-with-markdown': {
     title: 'Getting Started with Markdown',
     date: '2023-06-15',
@@ -81,7 +87,7 @@ To create a blockquote, add a > in front of a paragraph.
 
 To denote a word or phrase as code, enclose it in backticks (\`).
 
-`code`
+\`code\`
 
 ### Code Blocks
 
@@ -249,15 +255,15 @@ Every good project needs a README. Here's what to include:
 
 ### Project Title and Description
 
-```markdown
+\`\`\`markdown
 # Project Name
 
 A brief description of what this project does and who it's for.
-```
+\`\`\`
 
 ### Installation Instructions
 
-```markdown
+\`\`\`markdown
 ## Installation
 
 \`\`\`bash
@@ -265,11 +271,11 @@ npm install my-project
 cd my-project
 npm start
 \`\`\`
-```
+\`\`\`
 
 ### Usage Examples
 
-```markdown
+\`\`\`markdown
 ## Usage
 
 \`\`\`javascript
@@ -279,11 +285,11 @@ import { myFunction } from 'my-project';
 const result = myFunction('hello');
 console.log(result);
 \`\`\`
-```
+\`\`\`
 
 ### API Documentation
 
-```markdown
+\`\`\`markdown
 ## API
 
 ### myFunction(input)
@@ -293,17 +299,17 @@ console.log(result);
 | input | string | The input string to process |
 
 Returns: \`string\` - The processed output
-```
+\`\`\`
 
 ### Contributing Guidelines
 
-```markdown
+\`\`\`markdown
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
-```
+\`\`\`
 
 ## Markdown in Code Comments
 
@@ -320,10 +326,10 @@ Many programming languages support documentation generators that parse markdown 
  * @returns {number} The sum of a and b.
  * 
  * @example
- * ```js
+ * \`\`\`js
  * const result = add(2, 3);
  * console.log(result); // 5
- * ```
+ * \`\`\`
  */
 function add(a, b) {
   return a + b;
@@ -336,7 +342,7 @@ GitHub, GitLab, and other platforms use Markdown for issue descriptions, comment
 
 ### Bug Report Template
 
-```markdown
+\`\`\`markdown
 ## Bug Description
 
 When clicking the submit button on the login form, the application crashes.
@@ -363,7 +369,7 @@ TypeError: Cannot read property 'value' of undefined
 - Browser: Chrome 90.0.4430.212
 - OS: Windows 10
 - Device: Desktop
-```
+\`\`\`
 
 ## Advanced GitHub Markdown Features
 
@@ -371,24 +377,24 @@ GitHub has extended Markdown with some special features:
 
 ### Task Lists for Project Management
 
-```markdown
+\`\`\`markdown
 - [x] Research competitors
 - [x] Draft project proposal
 - [ ] Create wireframes
 - [ ] Develop prototype
-```
+\`\`\`
 
 ### Referencing Issues and Pull Requests
 
-```markdown
+\`\`\`markdown
 This PR fixes #42
-```
+\`\`\`
 
 ### Mentioning Users
 
-```markdown
+\`\`\`markdown
 @username please review this section
-```
+\`\`\`
 
 ## Tools for Developers
 
