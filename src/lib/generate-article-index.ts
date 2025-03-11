@@ -28,6 +28,11 @@ const generateArticleIndex = async () => {
     const files = fs.readdirSync(dataDir).filter(file => file.endsWith('.md'));
     
     const articles = files.map(fileName => {
+      // Skip index.json and README files
+      if (fileName === 'index.json' || fileName === 'README.md') {
+        return null;
+      }
+
       const slug = fileName.replace(/\.md$/, '');
       const filePath = path.join(dataDir, fileName);
       const fileContent = fs.readFileSync(filePath, 'utf-8');
@@ -40,11 +45,14 @@ const generateArticleIndex = async () => {
         title: data.title || 'Untitled',
         description: data.description || '',
         date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
-        author: data.author,
+        author: data.author || 'Unknown',
         readingTime: data.readingTime || calculateReadingTime(content),
         tags: data.tags || []
       };
-    });
+    }).filter(Boolean); // Remove null entries
+    
+    // Sort articles by date, newest first
+    articles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     
     // Write index file
     fs.writeFileSync(

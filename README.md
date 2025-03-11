@@ -1,3 +1,4 @@
+
 # Welcome to your Lovable project
 
 ## Project info
@@ -36,19 +37,16 @@ npm i
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Managing Article Content
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+This project includes a utility script for managing markdown articles. When you add new `.md` files to the `public/data` directory, you'll need to regenerate the article index:
 
-**Use GitHub Codespaces**
+```sh
+# Run the article index generator
+npx ts-node src/lib/generate-article-index.ts
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+For more information on article formatting and management, see the documentation in `public/data/README.md`.
 
 ## What technologies are used for this project?
 
