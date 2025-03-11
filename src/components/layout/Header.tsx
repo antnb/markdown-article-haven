@@ -54,7 +54,7 @@ const Header = () => {
     >
       <div className="container flex items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center space-x-2">
-          <span className="text-xl font-semibold tracking-tight">ArticleHaven</span>
+          <span className="text-xl font-semibold tracking-tight">JURNAL Regional</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -63,19 +63,19 @@ const Header = () => {
             to="/" 
             className="font-medium text-foreground/90 hover:text-foreground transition-colors"
           >
-            Home
+            Beranda
           </Link>
           <Link 
             to="/articles" 
             className="font-medium text-foreground/90 hover:text-foreground transition-colors"
           >
-            Articles
+            Artikel
           </Link>
           <Link 
             to="/about" 
             className="font-medium text-foreground/90 hover:text-foreground transition-colors"
           >
-            About
+            Tentang Kami
           </Link>
           <Button 
             variant="ghost" 
@@ -115,21 +115,21 @@ const Header = () => {
               className="px-4 py-2 rounded-md font-medium hover:bg-primary/10 transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Home
+              Beranda
             </Link>
             <Link 
               to="/articles" 
               className="px-4 py-2 rounded-md font-medium hover:bg-primary/10 transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Articles
+              Artikel
             </Link>
             <Link 
               to="/about" 
               className="px-4 py-2 rounded-md font-medium hover:bg-primary/10 transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              About
+              Tentang Kami
             </Link>
           </div>
         </div>
