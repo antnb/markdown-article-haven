@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Link } from 'react-router-dom';
@@ -17,14 +16,30 @@ const Index = () => {
     day: 'numeric'
   });
 
+  const [recentArticles, setRecentArticles] = useState<ArticleMetadata[]>([]);
+  const [techArticles, setTechArticles] = useState<ArticleMetadata[]>([]);
+  const [scienceArticles, setScienceArticles] = useState<ArticleMetadata[]>([]);
+
   useEffect(() => {
     const fetchArticles = async () => {
       try {
+        setLoading(true);
         const result = await getArticles(1);
         // Get the two most recent articles
         setFeaturedArticles(result.articles.slice(0, 2));
+        // Get the five most recent articles
+        setRecentArticles(result.articles.slice(0, 5));
+        
+        // Filter articles by category (assuming tags represent categories)
+        const tech = result.articles.filter(article => 
+          article.tags?.includes('technology')).slice(0, 5);
+        const science = result.articles.filter(article => 
+          article.tags?.includes('science')).slice(0, 5);
+        
+        setTechArticles(tech);
+        setScienceArticles(science);
       } catch (error) {
-        console.error('Failed to fetch featured articles:', error);
+        console.error('Failed to fetch articles:', error);
       } finally {
         setLoading(false);
       }
@@ -113,6 +128,101 @@ const Index = () => {
                 ))}
               </div>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Recent Articles Section */}
+      <section className="py-16 bg-background">
+        <div className="container px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex justify-between items-end mb-10">
+              <div>
+                <h2 className="text-3xl font-bold">Artikel Terbaru</h2>
+                <p className="text-muted-foreground mt-2">
+                  Update terkini dari berbagai kategori
+                </p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recentArticles.map((article, i) => (
+                <ArticleCard 
+                  key={article.slug}
+                  slug={article.slug}
+                  title={article.title}
+                  description={article.description}
+                  date={article.date}
+                  readingTime={article.readingTime}
+                  author={article.author}
+                  className="animate-in fade-in"
+                  index={i}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Sections */}
+      <section className="py-16 bg-card/50">
+        <div className="container px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto space-y-16">
+            {/* Technology Category */}
+            <div>
+              <div className="flex justify-between items-end mb-10">
+                <div>
+                  <h2 className="text-3xl font-bold">Teknologi</h2>
+                  <p className="text-muted-foreground mt-2">
+                    Artikel seputar dunia teknologi
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {techArticles.map((article, i) => (
+                  <ArticleCard 
+                    key={article.slug}
+                    slug={article.slug}
+                    title={article.title}
+                    description={article.description}
+                    date={article.date}
+                    readingTime={article.readingTime}
+                    author={article.author}
+                    className="animate-in fade-in"
+                    index={i}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Science Category */}
+            <div>
+              <div className="flex justify-between items-end mb-10">
+                <div>
+                  <h2 className="text-3xl font-bold">Sains</h2>
+                  <p className="text-muted-foreground mt-2">
+                    Artikel seputar ilmu pengetahuan
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {scienceArticles.map((article, i) => (
+                  <ArticleCard 
+                    key={article.slug}
+                    slug={article.slug}
+                    title={article.title}
+                    description={article.description}
+                    date={article.date}
+                    readingTime={article.readingTime}
+                    author={article.author}
+                    className="animate-in fade-in"
+                    index={i}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
